@@ -1,7 +1,10 @@
 package com.example.todo.users.controller;
 
 import java.net.URI;
+import java.util.Optional;
 
+import com.example.todo.users.dto.UserInfoDto;
+import com.example.todo.users.mapper.UserMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,9 +25,11 @@ import jakarta.validation.Valid;
 public class UserController {
 
     private final UserService userService;
+    private final UserMapper userMapper;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserMapper userMapper) {
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     @PostMapping("/register")
@@ -35,8 +40,15 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<String> getUserInfo(@PathVariable Long id) {
-        return ResponseEntity.ok("User: " + id.toString());
+    public ResponseEntity<UserInfoDto> getUserInfo(@PathVariable Long id) {
+        Optional<User> user = userService.findUserById(id);
+        if(user.isPresent()) {
+            UserInfoDto userInfo = userMapper.userEntityToDto(user.get());
+            return ResponseEntity.ok(userInfo);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+
     }
 
 }
