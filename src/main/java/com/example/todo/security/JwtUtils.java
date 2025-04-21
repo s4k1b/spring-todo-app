@@ -27,7 +27,7 @@ public class JwtUtils {
         return Jwts.builder()
                 .subject(userInfo.getEmail())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 5)) // 5 minutes
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24 hours
                 .signWith(getSignKey())
                 .compact();
     }

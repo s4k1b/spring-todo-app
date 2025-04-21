@@ -17,24 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtUtils jwtUtils;
-    private final UserMapper userMapper;
-    public AuthController(UserRepository userRepository, JwtUtils jwtUtils, UserMapper userMapper) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = new BCryptPasswordEncoder();
-        this.jwtUtils = jwtUtils;
-        this.userMapper = userMapper;
+    private final AuthService authService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> login(@RequestBody UserLoginDto userLoginDto) {
-        User user = userRepository.findByEmail(userLoginDto.getEmail());
-        UserInfoDto userInfo = userMapper.userEntityToDto(user);
-        if (user != null && passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())) {
-            String token = jwtUtils.generateJwt(userInfo);
-            return ResponseEntity.ok(new AuthResponseDto(token));
-        }
-        throw new RuntimeException("Invalid credentials");
+        String token = authService.authenticateUser(userLoginDto.getEmail(), userLoginDto.getPassword());
+        return ResponseEntity.ok(new AuthResponseDto(token));
     }
 }

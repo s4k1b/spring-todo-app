@@ -2,6 +2,7 @@ package com.example.todo.security;
 
 import java.io.IOException;
 
+import com.example.todo.users.dto.UserInfoDto;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -47,8 +48,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 String userEmail = jwtUtils.extractUserEmail(token);
                 if (userEmail != null) {
                     User user = userService.findUserByEmail(userEmail);
+                    UserInfoDto userInfo = userMapper.userEntityToDto(user);
                     if (jwtUtils.isTokenValid(token, userMapper.userEntityToDto(user))) {
-                        UsernamePasswordAuthenticationToken userAuthToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                        UsernamePasswordAuthenticationToken userAuthToken = new UsernamePasswordAuthenticationToken(userInfo, null, user.getAuthorities());
                         userAuthToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(userAuthToken);
                     }
