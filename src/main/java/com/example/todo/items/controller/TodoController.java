@@ -3,6 +3,7 @@ package com.example.todo.items.controller;
 import com.example.todo.items.dto.TodoItemCreateDto;
 import com.example.todo.items.dto.TodoItemInfoDto;
 import com.example.todo.items.entity.TodoItem;
+import com.example.todo.items.enums.TodoItemStatus;
 import com.example.todo.items.mapper.TodoItemMapper;
 import com.example.todo.items.service.TodoItemService;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/todo")
@@ -30,7 +32,7 @@ public class TodoController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<TodoItemInfoDto>> getToDoList() {
-        return ResponseEntity.ok(todoItemService.getTodoItems());
+    public ResponseEntity<List<TodoItemInfoDto>> getToDoList(@RequestParam Optional<String> status) {
+        return ResponseEntity.ok(todoItemService.getTodoItems(status));
     }
 }
